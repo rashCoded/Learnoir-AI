@@ -1,0 +1,101 @@
+[
+    {
+        "role_id": "swe_backend",
+        "title": "Backend Software Engineer",
+        "required_skills": [
+            "Python",
+            "REST API",
+            "SQL",
+            "Docker"
+        ],
+        "preferred_skills": [
+            "AWS",
+            "Redis",
+            "GraphQL",
+            "FastAPI",
+            "Django"
+        ],
+        "typical_projects": [
+            "API development",
+            "Microservices",
+            "Database Design"
+        ],
+        "market_demand": "high",
+        "avg_fresher_salary": "6-10 LPA",
+        "growth_trajectory": "SDE-2 -> Senior -> Lead -> Architect"
+    },
+    {
+        "role_id": "swe_frontend",
+        "title": "Frontend Software Engineer",
+        "required_skills": [
+            "JavaScript",
+            "React",
+            "HTML",
+            "CSS"
+        ],
+        "preferred_skills": [
+            "TypeScript",
+            "Next.js",
+            "Redux",
+            "Tailwind CSS"
+        ],
+        "typical_projects": [
+            "Dashboard UI",
+            "Responsive Landing Page",
+            "Interactive Web App"
+        ],
+        "market_demand": "high",
+        "avg_fresher_salary": "5-9 LPA",
+        "growth_trajectory": "Frontend Lead -> UI/UX Engineer -> Engineering Manager"
+    },
+    {
+        "role_id": "data_scientist",
+        "title": "Data Scientist",
+        "required_skills": [
+            "Python",
+            "SQL",
+            "Machine Learning",
+            "Data Science"
+        ],
+        "preferred_skills": [
+            "Deep Learning",
+            "Pandas",
+            "NumPy",
+            "TensorFlow",
+            "PyTorch"
+        ],
+        "typical_projects": [
+            "Predictive Modeling",
+            "Data Visualization",
+            "NLP Chatbot"
+        ],
+        "market_demand": "very high",
+        "avg_fresher_salary": "8-12 LPA",
+        "growth_trajectory": "Senior DS -> Lead DS -> Chief Data Officer"
+    },
+    {
+        "role_id": "devops",
+        "title": "DevOps Engineer",
+        "required_skills": [
+            "Docker",
+            "Kubernetes",
+            "Linux",
+            "Git"
+        ],
+        "preferred_skills": [
+            "AWS",
+            "CI/CD",
+            "Terraform",
+            "Ansible",
+            "Python"
+        ],
+        "typical_projects": [
+            "Automated Deployment Pipeline",
+            "Infrastructure as Code",
+            "Monitoring System"
+        ],
+        "market_demand": "high",
+        "avg_fresher_salary": "7-11 LPA",
+        "growth_trajectory": "Senior DevOps -> SRE -> Platform Engineer"
+    }
+]
