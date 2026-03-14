@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment / Secrets
+.env
+.env.local
+.env.*
+
+# Databases
+*.db
+*.sqlite3
+
+# Backup files
+*.bak
+
+# Build outputs
+dist/
+build/
+target/
+*.class
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
