@@ -40,7 +40,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition"],
-    allow_origin_regex=r"http://localhost(:[0-9]+)?$",
 )
 
 # Include routers
