@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -125,7 +126,7 @@ export default function LearningPage() {
 
         try {
             const token = localStorage.getItem("learnoir_token");
-            const response = await fetch("http://localhost:8000/api/learning/skill-gap-exercises", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/learning/skill-gap-exercises`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

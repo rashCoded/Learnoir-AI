@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { API_CONFIG } from '@/config/api';
 
 interface Achievement {
     id: number;
@@ -25,7 +26,7 @@ export default function ProfileView() {
     useEffect(() => {
         const fetchAchievements = async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/gamification/achievements");
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/gamification/achievements`);
                 if (res.ok) {
                     const data = await res.json();
                     setAchievements(data.achievements || []);

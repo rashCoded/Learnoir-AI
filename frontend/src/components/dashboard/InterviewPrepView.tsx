@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { API_CONFIG } from "@/config/api";
 
 interface MCQQuestion {
     question: string;
@@ -94,7 +95,7 @@ export default function InterviewPrepView({ role }: InterviewPrepViewProps) {
     const fetchStats = async () => {
         if (!session?.user?.email) return;
         try {
-            const res = await fetch(`http://localhost:8000/api/interview/stats/${session.user.email}`);
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/interview/stats/${session.user.email}`);
             if (res.ok) {
                 const data = await res.json();
                 setStats(data);
@@ -107,7 +108,7 @@ export default function InterviewPrepView({ role }: InterviewPrepViewProps) {
     const generateMCQQuestions = async () => {
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:8000/api/interview/generate-mcq", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/interview/generate-mcq`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -160,7 +161,7 @@ export default function InterviewPrepView({ role }: InterviewPrepViewProps) {
         const correctCount = answers.filter((a, idx) => a === questions[idx]?.correct_answer).length;
 
         try {
-            await fetch("http://localhost:8000/api/interview/save-attempt", {
+            await fetch(`${API_CONFIG.BASE_URL}/api/interview/save-attempt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

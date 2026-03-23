@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ResumeUpload from "@/components/dashboard/ResumeUpload";
+import { API_CONFIG } from "@/config/api";
 
 interface UserProfile {
     id: number;
@@ -104,7 +105,7 @@ export default function ProfilePage() {
             if (!session?.user?.email) return;
             try {
                 const token = localStorage.getItem("learnoir_token");
-                const res = await fetch("http://localhost:8000/api/auth/me", {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -150,11 +151,11 @@ export default function ProfilePage() {
         setSaving(true);
         try {
             const token = localStorage.getItem("learnoir_token");
-            const res = await fetch("http://localhost:8000/api/auth/onboarding", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding?user_email=${session.user.email}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                    ...(token && { Authorization: `Bearer ${token}` })
                 },
                 body: JSON.stringify({
                     goal: selectedGoal,
@@ -167,7 +168,7 @@ export default function ProfilePage() {
                 setEditingPreferences(false);
                 setMessage({ type: "success", text: "Preferences updated!" });
                 // Refresh profile
-                const profileRes = await fetch("http://localhost:8000/api/auth/me", {
+                const profileRes = await fetch(`${API_CONFIG.BASE_URL}/api/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (profileRes.ok) setUserProfile(await profileRes.json());

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { API_CONFIG } from "@/config/api";
 
 interface RoadmapViewProps {
     role: any;
@@ -29,7 +30,8 @@ export default function RoadmapView({ role, currentSkills, experience = [] }: Ro
                 setError(null);
 
                 // First, check if user has an active roadmap for this role
-                const checkRes = await fetch(`http://localhost:8000/api/roadmap/active/${encodeURIComponent(session.user.email)}`);
+                // Using correct base URL
+                const checkRes = await fetch(`${API_CONFIG.BASE_URL}/api/roadmap/active/${encodeURIComponent(session.user.email)}`);
 
                 if (checkRes.ok) {
                     const existingRoadmap = await checkRes.json();
@@ -53,7 +55,7 @@ export default function RoadmapView({ role, currentSkills, experience = [] }: Ro
 
                 console.log("📤 Generating new roadmap...");
 
-                const response = await fetch("http://localhost:8000/api/roadmap/generate", {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/api/roadmap/generate`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
@@ -105,7 +107,7 @@ export default function RoadmapView({ role, currentSkills, experience = [] }: Ro
 
         // Save to database
         try {
-            await fetch("http://localhost:8000/api/roadmap/progress", {
+            await fetch(`${API_CONFIG.BASE_URL}/api/roadmap/progress`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

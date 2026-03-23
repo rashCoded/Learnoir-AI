@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -80,7 +81,7 @@ export default function JobMatchPage() {
 
         try {
             const token = localStorage.getItem("learnoir_token");
-            const response = await fetch("http://localhost:8000/api/jobs/skill-match", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/jobs/skill-match`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

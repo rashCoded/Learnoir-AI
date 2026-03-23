@@ -11,6 +11,7 @@ import InterviewPrepView from "@/components/dashboard/InterviewPrepView";
 import SkillRadarChart from "@/components/dashboard/SkillRadarChart";
 import PremiumUpgradeModal from "@/components/PremiumUpgradeModal";
 import PremiumBadge from "@/components/PremiumBadge";
+import { API_CONFIG } from "@/config/api";
 
 interface UserProfile {
     onboarding_complete: boolean;
@@ -155,7 +156,7 @@ export default function DashboardPage() {
 
             try {
                 const token = localStorage.getItem("learnoir_token");
-                const profileRes = await fetch("http://localhost:8000/api/auth/me", {
+                const profileRes = await fetch(`${API_CONFIG.BASE_URL}/api/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -887,7 +888,7 @@ export default function DashboardPage() {
                                                         if (!userEmail) {
                                                             throw new Error("User not authenticated");
                                                         }
-                                                        const response = await fetch(`http://localhost:8000/api/resume/analyze-saved-pdf?email=${encodeURIComponent(userEmail)}`, {
+                                                        const response = await fetch(`${API_CONFIG.BASE_URL}/api/resume/analyze-saved-pdf?email=${encodeURIComponent(userEmail)}`, {
                                                             method: "POST"
                                                         });
                                                         if (response.ok) {
@@ -951,7 +952,7 @@ export default function DashboardPage() {
                                                         try {
                                                             const formData = new FormData();
                                                             formData.append("file", selectedAnalysisFile);
-                                                            const response = await fetch("http://localhost:8000/api/resume/ai-feedback-pdf", {
+                                                            const response = await fetch(`${API_CONFIG.BASE_URL}/api/resume/ai-feedback-pdf`, {
                                                                 method: "POST",
                                                                 body: formData
                                                             });

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { API_CONFIG } from "@/config/api";
 
 const handler = NextAuth({
     providers: [
@@ -22,8 +23,7 @@ const handler = NextAuth({
                 }
 
                 try {
-                    // Use 127.0.0.1 explicitly to avoid IPv6 resolution issues
-                    const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/api/auth/login`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -32,16 +32,17 @@ const handler = NextAuth({
                         }),
                     });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        return {
-                            id: String(data.user.id),
-                            name: data.user.name,
-                            email: data.user.email,
-                            accessToken: data.access_token,
-                        };
+                    if (!response.ok) {
+                        return null;
                     }
-                    return null;
+                    
+                    const data = await response.json();
+                    return {
+                        id: String(data.user.id),
+                        name: data.user.name,
+                        email: data.user.email,
+                        accessToken: data.access_token,
+                    };
                 } catch (error) {
                     console.error("Auth error:", error);
                     return null;
@@ -58,7 +59,7 @@ const handler = NextAuth({
             if (account?.provider === "google" && user.email) {
                 try {
                     // Create or update user in backend database
-                    const response = await fetch("http://127.0.0.1:8000/api/auth/oauth-sync", {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/api/auth/oauth-sync`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({

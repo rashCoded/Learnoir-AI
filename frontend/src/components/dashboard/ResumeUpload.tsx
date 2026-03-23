@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_CONFIG } from "@/config/api";
 
 interface ResumeUploadProps {
     onUploadComplete: (data: { skills: string[], roles: any[], experience?: string[] }) => void;
@@ -57,7 +58,8 @@ export default function ResumeUpload({ onUploadComplete, userEmail }: ResumeUplo
                         try {
                             const savePdfFormData = new FormData();
                             savePdfFormData.append("file", file);
-                            await fetch(`http://localhost:8000/api/resume/save-pdf?email=${encodeURIComponent(userEmail)}`, {
+                            // Also save PDF to database if user email is provided
+                            await fetch(`${API_CONFIG.BASE_URL}/api/resume/save-pdf?email=${encodeURIComponent(userEmail)}`, {
                                 method: "POST",
                                 body: savePdfFormData
                             });
@@ -78,7 +80,7 @@ export default function ResumeUpload({ onUploadComplete, userEmail }: ResumeUplo
                 setLoading(false);
             });
 
-            xhr.open("POST", "http://localhost:8000/api/resume/analyze");
+            xhr.open("POST", `${API_CONFIG.BASE_URL}/api/resume/analyze`);
             xhr.send(formData);
         } catch (err) {
             setError("Error uploading resume. Please try again.");
@@ -96,7 +98,7 @@ export default function ResumeUpload({ onUploadComplete, userEmail }: ResumeUplo
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:8000/api/resume/feedback", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/resume/feedback`, {
                 method: "POST",
                 headers: {
                     ...(token && { "Authorization": `Bearer ${token}` })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_CONFIG } from "@/config/api";
 
 interface DailyTip {
     tip: string;
@@ -35,7 +36,7 @@ export default function DailyTip() {
     useEffect(() => {
         const fetchTip = async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/gamification/daily");
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/gamification/daily`);
                 if (res.ok) {
                     const data = await res.json();
                     setTip(data);

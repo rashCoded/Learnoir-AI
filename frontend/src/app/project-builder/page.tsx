@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -114,7 +115,7 @@ export default function ProjectBuilderPage() {
 
         try {
             const token = localStorage.getItem("learnoir_token");
-            const response = await fetch("http://localhost:8000/api/projects/generate-from-jd", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/projects/generate-from-jd`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

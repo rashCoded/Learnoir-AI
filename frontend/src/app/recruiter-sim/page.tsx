@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -161,7 +162,7 @@ export default function RecruiterSimPage() {
             const formData = new FormData();
             formData.append("file", file);
 
-            const response = await fetch("http://localhost:8000/api/resume/parse", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/resume/parse`, {
                 method: "POST",
                 body: formData,
             });
@@ -203,7 +204,7 @@ export default function RecruiterSimPage() {
 
         try {
             const token = localStorage.getItem("learnoir_token");
-            const response = await fetch("http://localhost:8000/api/recruiter/simulate", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/recruiter/simulate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

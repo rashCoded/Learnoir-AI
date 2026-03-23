@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 interface RoadmapItem {
     id: number;
@@ -44,8 +45,8 @@ export default function ProgressPage() {
             setError(null);
 
             // Load from database
-            const res = await fetch(`http://localhost:8000/api/roadmap/active/${encodeURIComponent(session!.user!.email!)}`);
-
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/roadmap/active/${encodeURIComponent(session!.user!.email!)}`);
+            
             if (res.ok) {
                 const data = await res.json();
                 if (data) {
@@ -84,7 +85,7 @@ export default function ProgressPage() {
 
         // Save to database
         try {
-            await fetch("http://localhost:8000/api/roadmap/progress", {
+            await fetch(`${API_CONFIG.BASE_URL}/api/roadmap/progress`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

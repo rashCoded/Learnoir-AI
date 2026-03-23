@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 interface Example {
     input: string;
@@ -87,7 +88,7 @@ export default function CodingTestPage() {
     const fetchStats = async () => {
         if (!session?.user?.email) return;
         try {
-            const res = await fetch(`http://localhost:8000/api/coding/history/${session.user.email}`);
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/coding/history/${session.user.email}`);
             if (res.ok) {
                 const data = await res.json();
                 setStats(data.stats || { total_solved: 0, easy_solved: 0, medium_solved: 0, hard_solved: 0 });
@@ -99,7 +100,7 @@ export default function CodingTestPage() {
 
     const fetchProblemsCount = async () => {
         try {
-            const res = await fetch("http://localhost:8000/api/coding/problems");
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/coding/problems`);
             if (res.ok) {
                 const data = await res.json();
                 setProblemsFound(data.count || 0);
@@ -115,7 +116,7 @@ export default function CodingTestPage() {
         setShowHint(false);
         try {
             const token = localStorage.getItem("learnoir_token");
-            const res = await fetch("http://localhost:8000/api/coding/generate", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/coding/generate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -147,7 +148,7 @@ export default function CodingTestPage() {
         setResult(null);
         try {
             const token = localStorage.getItem("learnoir_token");
-            const res = await fetch("http://localhost:8000/api/coding/evaluate", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/coding/evaluate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

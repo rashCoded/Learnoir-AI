@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_CONFIG } from "@/config/api";
 
 export default function ForgotPassword() {
     const router = useRouter();
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8000/api/auth/forgot-password", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/forgot-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
@@ -67,7 +68,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8000/api/auth/reset-password", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, otp, new_password: newPassword }),
@@ -89,7 +90,7 @@ export default function ForgotPassword() {
     const resendOTP = async () => {
         setLoading(true);
         try {
-            await fetch("http://localhost:8000/api/auth/forgot-password", {
+            await fetch(`${API_CONFIG.BASE_URL}/api/auth/forgot-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),

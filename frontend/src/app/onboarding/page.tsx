@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { API_CONFIG } from "@/config/api";
 
 const GOALS = [
     { id: "job", label: "Full-time Job", description: "Looking for a full-time position" },
@@ -74,7 +75,7 @@ export default function OnboardingPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`http://localhost:8000/api/auth/onboarding?user_email=${session.user.email}`, {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding?user_email=${session.user.email}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

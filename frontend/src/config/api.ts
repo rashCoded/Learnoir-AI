@@ -1,6 +1,15 @@
 // API Configuration
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  return 'http://localhost:8000';
+};
+
+export const API_URL = getBaseUrl();
+
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  BASE_URL: API_URL,
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/api/auth/login',

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { API_CONFIG } from "@/config/api";
 
 export default function SignUp() {
     const router = useRouter();
@@ -35,7 +36,7 @@ export default function SignUp() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8000/api/auth/register", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -46,7 +47,7 @@ export default function SignUp() {
                 localStorage.setItem("learnoir_token", data.access_token);
 
                 // Send OTP for email verification
-                await fetch("http://localhost:8000/api/auth/send-otp", {
+                await fetch(`${API_CONFIG.BASE_URL}/api/auth/send-otp`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: formData.email }),
@@ -86,7 +87,7 @@ export default function SignUp() {
         setOtpError("");
 
         try {
-            const res = await fetch("http://localhost:8000/api/auth/verify-otp", {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/verify-otp`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: formData.email, otp }),
@@ -119,7 +120,7 @@ export default function SignUp() {
     const resendOTP = async () => {
         setOtpLoading(true);
         try {
-            await fetch("http://localhost:8000/api/auth/send-otp", {
+            await fetch(`${API_CONFIG.BASE_URL}/api/auth/send-otp`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: formData.email }),
