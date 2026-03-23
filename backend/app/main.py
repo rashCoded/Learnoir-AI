@@ -34,7 +34,7 @@ async def startup_event():
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"
+    allow_origins=["http://localhost:3000",
                   "https://learnoir-ai.vercel.app"],  # Frontend URL
     allow_credentials=True,
     allow_methods=["*"],
