@@ -94,11 +94,20 @@ export default function ProfilePage() {
     const [selectedExperience, setSelectedExperience] = useState("");
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const saved = localStorage.getItem("learnoir_resume_data");
-            if (saved) setResumeData(JSON.parse(saved));
+        const email = session?.user?.email;
+        if (!email) {
+            setResumeData(null);
+            return;
         }
-    }, []);
+
+        const owner = localStorage.getItem("learnoir_session_email");
+        if (owner === email) {
+            const saved = localStorage.getItem("learnoir_resume_data");
+            setResumeData(saved ? JSON.parse(saved) : null);
+        } else {
+            setResumeData(null);
+        }
+    }, [session?.user?.email]);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -163,7 +172,7 @@ export default function ProfilePage() {
         setSaving(true);
         try {
             const token = localStorage.getItem("learnoir_token");
-            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding?user_email=${session.user.email}`, {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -295,6 +304,8 @@ export default function ProfilePage() {
                                     Cancel
                                 </button>
                             </div>
+                                            localStorage.removeItem("learnoir_resume_data");
+                                            localStorage.removeItem("learnoir_token");
                         ) : resumeData ? (
                             <div className="space-y-4">
                                 <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-between">

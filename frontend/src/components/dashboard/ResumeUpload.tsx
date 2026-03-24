@@ -53,14 +53,17 @@ export default function ResumeUpload({ onUploadComplete, userEmail }: ResumeUplo
                     setUploadedData(data);
                     onUploadComplete(data);
 
-                    // Also save PDF to database if user email is provided
-                    if (userEmail && file) {
+                    // Also save PDF to database for current authenticated user
+                    if (file) {
                         try {
                             const savePdfFormData = new FormData();
                             savePdfFormData.append("file", file);
-                            // Also save PDF to database if user email is provided
-                            await fetch(`${API_CONFIG.BASE_URL}/api/resume/save-pdf?email=${encodeURIComponent(userEmail)}`, {
+                            const authToken = localStorage.getItem("learnoir_token");
+                            await fetch(`${API_CONFIG.BASE_URL}/api/resume/save-pdf`, {
                                 method: "POST",
+                                headers: {
+                                    ...(authToken && { Authorization: `Bearer ${authToken}` })
+                                },
                                 body: savePdfFormData
                             });
                             console.log("PDF saved to database");

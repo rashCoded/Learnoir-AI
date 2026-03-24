@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { API_CONFIG } from "@/config/api";
+import { useSession } from "next-auth/react";
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -61,17 +62,27 @@ interface JobMatchResult {
 }
 
 export default function JobMatchPage() {
+    const { data: session } = useSession();
     const [resumeData, setResumeData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<JobMatchResult | null>(null);
     const [activeTab, setActiveTab] = useState<"roles" | "skills" | "jobs">("roles");
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const saved = localStorage.getItem("learnoir_resume_data");
-            if (saved) setResumeData(JSON.parse(saved));
+        const email = session?.user?.email;
+        if (!email) {
+            setResumeData(null);
+            return;
         }
-    }, []);
+
+        const owner = localStorage.getItem("learnoir_session_email");
+        if (owner === email) {
+            const saved = localStorage.getItem("learnoir_resume_data");
+            setResumeData(saved ? JSON.parse(saved) : null);
+        } else {
+            setResumeData(null);
+        }
+    }, [session?.user?.email]);
 
     const handleAnalyze = async () => {
         if (!resumeData?.skills?.length) return;

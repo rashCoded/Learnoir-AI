@@ -111,13 +111,7 @@ export default function DashboardPage() {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeView, setActiveView] = useState<"welcome" | "roadmap" | "interview" | "resume">("welcome");
-    const [resumeData, setResumeData] = useState<any>(() => {
-        if (typeof window !== "undefined") {
-            const saved = localStorage.getItem("learnoir_resume_data");
-            return saved ? JSON.parse(saved) : null;
-        }
-        return null;
-    });
+    const [resumeData, setResumeData] = useState<any>(null);
     const [selectedRole, setSelectedRole] = useState<any>(null);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [roadmapGenerated, setRoadmapGenerated] = useState(false);
@@ -136,6 +130,22 @@ export default function DashboardPage() {
     // Premium State
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const isPremium = userProfile?.subscription_plan === "premium";
+
+    useEffect(() => {
+        const email = session?.user?.email;
+        if (!email) {
+            setResumeData(null);
+            return;
+        }
+
+        const owner = localStorage.getItem("learnoir_session_email");
+        if (owner === email) {
+            const saved = localStorage.getItem("learnoir_resume_data");
+            setResumeData(saved ? JSON.parse(saved) : null);
+        } else {
+            setResumeData(null);
+        }
+    }, [session?.user?.email]);
 
     const handlePremiumSuccess = () => {
         // Refresh user profile to get updated subscription status
@@ -355,7 +365,11 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="border-t border-white/10 pt-1 mt-1">
                                         <button
-                                            onClick={() => signOut({ callbackUrl: "/" })}
+                                            onClick={() => {
+                                                localStorage.removeItem("learnoir_resume_data");
+                                                localStorage.removeItem("learnoir_token");
+                                                signOut({ callbackUrl: "/" });
+                                            }}
                                             className="flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-white/10 w-full text-left"
                                         >
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -895,13 +909,12 @@ export default function DashboardPage() {
                                                     setShowAnalysisModal(false);
                                                     setFeedbackLoading(true);
                                                     try {
-                                                        // Call analyze-saved-pdf endpoint with user email
-                                                        const userEmail = session?.user?.email;
-                                                        if (!userEmail) {
-                                                            throw new Error("User not authenticated");
-                                                        }
-                                                        const response = await fetch(`${API_CONFIG.BASE_URL}/api/resume/analyze-saved-pdf?email=${encodeURIComponent(userEmail)}`, {
-                                                            method: "POST"
+                                                        const token = localStorage.getItem("learnoir_token");
+                                                        const response = await fetch(`${API_CONFIG.BASE_URL}/api/resume/analyze-saved-pdf`, {
+                                                            method: "POST",
+                                                            headers: {
+                                                                ...(token && { Authorization: `Bearer ${token}` })
+                                                            }
                                                         });
                                                         if (response.ok) {
                                                             const feedback = await response.json();

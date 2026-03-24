@@ -75,9 +75,13 @@ export default function OnboardingPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding?user_email=${session.user.email}`, {
+            const token = localStorage.getItem("learnoir_token");
+            const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/onboarding`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { Authorization: `Bearer ${token}` })
+                },
                 body: JSON.stringify(formData)
             });
 
