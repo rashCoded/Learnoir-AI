@@ -153,6 +153,8 @@ class OAuthSyncRequest(BaseModel):
 class OAuthSyncResponse(BaseModel):
     user: UserResponse
     is_new: bool
+    access_token: str
+    token_type: str
 
 @router.post("/oauth-sync", response_model=OAuthSyncResponse)
 def oauth_sync(req: OAuthSyncRequest, db: Session = Depends(get_db)):
@@ -176,9 +178,12 @@ def oauth_sync(req: OAuthSyncRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(existing_user)
         
+        access_token = create_access_token(data={"sub": str(existing_user.id)})
         return OAuthSyncResponse(
             user=UserResponse.model_validate(existing_user),
-            is_new=False
+            is_new=False,
+            access_token=access_token,
+            token_type="bearer"
         )
     
     # Create new user with OAuth - use random password hash since they auth via OAuth
@@ -192,10 +197,14 @@ def oauth_sync(req: OAuthSyncRequest, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    access_token = create_access_token(data={"sub": str(new_user.id)})
     
     return OAuthSyncResponse(
         user=UserResponse.model_validate(new_user),
-        is_new=True
+        is_new=True,
+        access_token=access_token,
+        token_type="bearer"
     )
 
 
