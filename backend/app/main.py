@@ -32,10 +32,19 @@ async def startup_event():
         print("⚠️ Razorpay not configured - add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env")
 
 # Configure CORS
+# FRONTEND_ORIGINS supports a comma-separated list (for example: https://learnoirai.vercel.app,https://www.example.com)
+frontend_origins_raw = os.getenv("FRONTEND_ORIGINS", "")
+frontend_origins = [origin.strip() for origin in frontend_origins_raw.split(",") if origin.strip()]
+
+if not frontend_origins:
+    frontend_origins = [
+        "http://localhost:3000",
+        "https://learnoirai.vercel.app",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000",
-                  "https://learnoir-ai.vercel.app"],  # Frontend URL
+    allow_origins=frontend_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
