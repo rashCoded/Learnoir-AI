@@ -1,26 +1,33 @@
 """
-Email Service for sending OTP emails via Gmail SMTP
+Email Service for sending OTP emails via Resend
 """
-import smtplib
 import random
 import string
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import os
+import importlib
+from typing import Any
 
 
 class EmailService:
     def __init__(self):
-        # Gmail SMTP configuration - set these in environment variables
-        self.smtp_server = "smtp.gmail.com"
-        self.smtp_port = 587
-        self.sender_email = os.getenv("GMAIL_EMAIL", "")
-        self.sender_password = os.getenv("GMAIL_APP_PASSWORD", "")  # Use App Password, not regular password
-        self.enabled = bool(self.sender_email and self.sender_password)
+        self.api_key = os.getenv("RESEND_API_KEY", "")
+        self.from_email = "onboarding@resend.dev"
+        self.resend: Any = None
+
+        if self.api_key:
+            try:
+                self.resend = importlib.import_module("resend")
+                self.resend.api_key = self.api_key
+                self.enabled = True
+            except Exception as e:
+                self.enabled = False
+                print(f"⚠️ Email service disabled - failed to load resend: {e}")
+        else:
+            self.enabled = False
         
         if not self.enabled:
-            print("⚠️ Email service disabled - GMAIL_EMAIL and GMAIL_APP_PASSWORD not set")
+            print("⚠️ Email service disabled - RESEND_API_KEY not set")
             print("📧 OTPs will be printed to console for testing")
     
     def generate_otp(self, length: int = 6) -> str:
@@ -32,31 +39,40 @@ class EmailService:
         return datetime.utcnow() + timedelta(minutes=minutes)
     
     def send_email(self, to_email: str, subject: str, html_body: str) -> bool:
-        """Send email via Gmail SMTP"""
+        """Send email via Resend"""
         if not self.enabled:
-            print(f"📧 [MOCK EMAIL] To: {to_email}")
-            print(f"   Subject: {subject}")
-            print(f"   Body: {html_body}")
-            return True
+            return False
         
         try:
-            msg = MIMEMultipart("alternative")
-            msg["Subject"] = subject
-            msg["From"] = f"Learnoir AI <{self.sender_email}>"
-            msg["To"] = to_email
-            
-            html_part = MIMEText(html_body, "html")
-            msg.attach(html_part)
-            
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.starttls()
-                server.login(self.sender_email, self.sender_password)
-                server.sendmail(self.sender_email, to_email, msg.as_string())
-            
+            result = self.resend.Emails.send({
+                "from": self.from_email,
+                "to": [to_email],
+                "subject": subject,
+                "html": html_body,
+            })
+
+            # Handle Resend response pattern: { data, error }
+            if isinstance(result, dict):
+                data = result.get("data")
+                error = result.get("error")
+            elif isinstance(result, tuple) and len(result) == 2:
+                data, error = result
+            else:
+                data = getattr(result, "data", None)
+                error = getattr(result, "error", None)
+
+            if error:
+                print(f"❌ Failed to send email via Resend: {error}")
+                return False
+
+            if data is None:
+                print("❌ Failed to send email via Resend: empty response data")
+                return False
+
             print(f"✅ Email sent to {to_email}")
             return True
         except Exception as e:
-            print(f"❌ Failed to send email: {e}")
+            print(f"❌ Failed to send email via Resend: {e}")
             return False
     
     def send_registration_otp(self, to_email: str, otp: str, name: str = "there") -> bool:
@@ -77,7 +93,12 @@ class EmailService:
             </div>
         </div>
         """
-        return self.send_email(to_email, subject, html_body)
+        sent = self.send_email(to_email, subject, html_body)
+        if not sent:
+            email = to_email
+            otp_code = otp
+            print(f"OTP for {email}: {otp_code}")
+        return sent
     
     def send_password_reset_otp(self, to_email: str, otp: str) -> bool:
         """Send OTP for password reset"""
@@ -97,7 +118,12 @@ class EmailService:
             </div>
         </div>
         """
-        return self.send_email(to_email, subject, html_body)
+        sent = self.send_email(to_email, subject, html_body)
+        if not sent:
+            email = to_email
+            otp_code = otp
+            print(f"OTP for {email}: {otp_code}")
+        return sent
 
 
 # Global instance

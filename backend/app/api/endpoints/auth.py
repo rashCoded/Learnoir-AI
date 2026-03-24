@@ -163,9 +163,16 @@ def oauth_sync(req: OAuthSyncRequest, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == req.email).first()
     
     if existing_user:
-        # User exists, update name if changed
+        # User exists, keep profile in sync and auto-verify OAuth email
+        needs_update = False
         if existing_user.name != req.name:
             existing_user.name = req.name
+            needs_update = True
+        if not existing_user.email_verified:
+            existing_user.email_verified = True
+            needs_update = True
+
+        if needs_update:
             db.commit()
             db.refresh(existing_user)
         
@@ -179,6 +186,7 @@ def oauth_sync(req: OAuthSyncRequest, db: Session = Depends(get_db)):
         name=req.name,
         email=req.email,
         password_hash=hash_password(secrets.token_urlsafe(32)),  # Random password for OAuth users
+        email_verified=True,
     )
     
     db.add(new_user)
