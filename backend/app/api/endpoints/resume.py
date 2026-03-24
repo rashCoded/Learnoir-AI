@@ -303,18 +303,20 @@ from fastapi import Depends, Response
 from sqlalchemy.orm import Session
 from app.models.database import ResumeData, User
 from app.database import get_db
+from app.utils.auth import get_current_user
 
 
 @router.post("/save-pdf")
-async def save_resume_pdf(email: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    """Save resume PDF to database linked to user by email"""
+async def save_resume_pdf(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Save resume PDF to database for current authenticated user"""
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
     
-    # Get user by email
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    user = db.query(User).filter(User.id == current_user.id).first()
     
     # Read PDF content
     pdf_content = await file.read()
@@ -342,11 +344,12 @@ async def save_resume_pdf(email: str, file: UploadFile = File(...), db: Session 
 
 
 @router.get("/get-pdf")
-async def get_resume_pdf(email: str, db: Session = Depends(get_db)):
-    """Get saved resume PDF for a user by email"""
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+async def get_resume_pdf(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get saved resume PDF for current authenticated user"""
+    user = db.query(User).filter(User.id == current_user.id).first()
     
     resume = db.query(ResumeData).filter(ResumeData.user_id == user.id).first()
     
@@ -361,11 +364,12 @@ async def get_resume_pdf(email: str, db: Session = Depends(get_db)):
 
 
 @router.post("/analyze-saved-pdf", response_model=AIFeedbackResponse)
-async def analyze_saved_resume_pdf(email: str, db: Session = Depends(get_db)):
-    """Analyze the saved resume PDF for a user using AI (by email)"""
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+async def analyze_saved_resume_pdf(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Analyze the saved resume PDF for current authenticated user using AI"""
+    user = db.query(User).filter(User.id == current_user.id).first()
     
     resume = db.query(ResumeData).filter(ResumeData.user_id == user.id).first()
     

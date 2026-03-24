@@ -121,11 +121,13 @@ class OnboardingRequest(BaseModel):
 
 
 @router.put("/onboarding")
-def complete_onboarding(req: OnboardingRequest, user_email: str, db: Session = Depends(get_db)):
-    """Complete user onboarding with goal, role, and experience"""
-    user = db.query(User).filter(User.email == user_email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+def complete_onboarding(
+    req: OnboardingRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Complete user onboarding with goal, role, and experience for current authenticated user"""
+    user = db.query(User).filter(User.id == current_user.id).first()
     
     user.goal = req.goal
     user.target_role = req.target_role
