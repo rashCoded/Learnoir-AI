@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState, useEffect, Suspense } from "react"; 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
@@ -84,7 +85,14 @@ function SignInContent() {
     return (
         <div className="flex min-h-screen flex-col justify-center bg-black px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600"></div>
+                <Image
+                    src="/logo.png"
+                    alt="Learnoir logo"
+                    width={56}
+                    height={56}
+                    className="mx-auto h-14 w-14 rounded-xl object-contain"
+                    priority
+                />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
                     Sign in to Learnoir
                 </h2>
