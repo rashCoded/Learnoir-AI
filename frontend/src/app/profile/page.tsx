@@ -304,8 +304,6 @@ export default function ProfilePage() {
                                     Cancel
                                 </button>
                             </div>
-                                            localStorage.removeItem("learnoir_resume_data");
-                                            localStorage.removeItem("learnoir_token");
                         ) : resumeData ? (
                             <div className="space-y-4">
                                 <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-between">
@@ -466,6 +464,8 @@ export default function ProfilePage() {
                             <button
                                 onClick={() => {
                                     if (confirm("Are you sure you want to sign out?")) {
+                                        localStorage.removeItem("learnoir_resume_data");
+                                        localStorage.removeItem("learnoir_token");
                                         signOut({ callbackUrl: "/" });
                                     }
                                 }}
