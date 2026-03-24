@@ -104,7 +104,19 @@ export default function ProfilePage() {
         const fetchProfile = async () => {
             if (!session?.user?.email) return;
             try {
-                const token = localStorage.getItem("learnoir_token");
+                const tokenFromSession = (session as any)?.accessToken as string | undefined;
+                let token = localStorage.getItem("learnoir_token");
+                if (!token && tokenFromSession) {
+                    localStorage.setItem("learnoir_token", tokenFromSession);
+                    token = tokenFromSession;
+                }
+
+                if (!token) {
+                    setIsLoading(false);
+                    router.push("/auth/signin");
+                    return;
+                }
+
                 const res = await fetch(`${API_CONFIG.BASE_URL}/api/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });

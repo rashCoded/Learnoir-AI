@@ -72,10 +72,19 @@ const handler = NextAuth({
 
                     if (!response.ok) {
                         console.error("Failed to sync OAuth user with backend");
+                        return false;
                     }
+
+                    const syncData = await response.json();
+                    if (!syncData?.access_token) {
+                        console.error("OAuth sync succeeded but backend token missing");
+                        return false;
+                    }
+
+                    (user as any).accessToken = syncData.access_token;
                 } catch (error) {
                     console.error("OAuth sync error:", error);
-                    // Don't block sign in if sync fails - user can still use frontend
+                    return false;
                 }
             }
             return true;
@@ -87,6 +96,30 @@ const handler = NextAuth({
                 token.id = user.id;
                 token.provider = account?.provider;
             }
+
+            // Safety net for Google OAuth: ensure backend JWT exists on first sign in.
+            if (account?.provider === "google" && !token.accessToken && token.email) {
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/api/auth/oauth-sync`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: token.email,
+                            name: token.name || token.email.split("@")[0],
+                            provider: "google",
+                            provider_id: account.providerAccountId,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const syncData = await response.json();
+                        token.accessToken = syncData?.access_token;
+                    }
+                } catch (error) {
+                    console.error("OAuth token sync error:", error);
+                }
+            }
+
             return token;
         },
         async session({ session, token }) {
