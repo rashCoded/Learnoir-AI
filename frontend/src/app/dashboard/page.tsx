@@ -393,7 +393,7 @@ export default function DashboardPage() {
                         {/* Neutral Welcome Text */}
                         <div className="text-center py-6">
                             <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                                Welcome back, {userName}
+                                Welcome , {userName} !
                             </h1>
                             <p className="text-lg text-gray-400">
                                 Explore roles and generate a personalized roadmap
