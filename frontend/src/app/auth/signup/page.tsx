@@ -318,6 +318,13 @@ export default function SignUp() {
                     </div>
                 </form>
 
+                <p className="mt-4 text-center text-sm text-gray-400">
+                    Having trouble?{" "}
+                    <Link href="/auth/signin" className="text-indigo-400 hover:text-indigo-300">
+                        Sign in with Google instead
+                    </Link>
+                </p>
+
                 <p className="mt-10 text-center text-sm text-gray-400">
                     Already have an account?{" "}
                     <Link
