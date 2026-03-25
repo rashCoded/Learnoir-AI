@@ -386,6 +386,13 @@ export default function SignUp() {
                             Didn't receive the code? Resend OTP
                         </button>
 
+                        <p className="text-center text-sm text-gray-400 mb-3">
+                            Having trouble?{" "}
+                            <Link href="/auth/signin" className="text-indigo-400 hover:text-indigo-300">
+                                Sign in with Google instead
+                            </Link>
+                        </p>
+
                         <button
                             onClick={skipVerification}
                             className="w-full py-2 text-gray-500 hover:text-gray-300 transition-colors text-xs"
